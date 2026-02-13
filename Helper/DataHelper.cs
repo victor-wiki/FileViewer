@@ -41,7 +41,7 @@ namespace FileViewer.Helper
             }
             else
             {
-                return $"'{strValue.Replace("'","\\'").Replace("\n","\\n")}'";
+                return $"'{strValue.Replace("'","\\'").Replace("\n","\\n").Replace("\r", "\\r")}'";
             }
         }
     }
