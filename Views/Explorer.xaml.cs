@@ -29,32 +29,29 @@ public partial class Explorer : ContentPage
         {
             foreach (var entry in zipfile.Entries)
             {
-                if (!entry.IsDirectory)
+                string key = entry.Key;
+                string name = Path.GetFileName(key.TrimEnd('/'));
+                string path = entry.Key.TrimEnd('/');
+
+                if (this.entryRootDirectory == null)
                 {
-                    string key = entry.Key;
-                    string name = Path.GetFileName(key.TrimEnd('/'));
-                    string path = entry.Key.TrimEnd('/');
-
-                    if (this.entryRootDirectory == null)
+                    if (path.Contains("/"))
                     {
-                        if (path.Contains("/"))
-                        {
-                            int index = path.IndexOf("/");
+                        int index = path.IndexOf("/");
 
-                            this.entryRootDirectory = path.Substring(0, index);
-                        }
+                        this.entryRootDirectory = path.Substring(0, index);
                     }
-
-                    ZipEntryInfo entryInfo = new ZipEntryInfo()
-                    {
-                        IsFile = !entry.IsDirectory,
-                        Key = key,
-                        Name = name,
-                        Path = path                       
-                    };
-
-                    this.entryInfos.Add(entryInfo);
                 }
+
+                ZipEntryInfo entryInfo = new ZipEntryInfo()
+                {
+                    IsFile = !entry.IsDirectory,
+                    Key = key,
+                    Name = name,
+                    Path = path
+                };
+
+                this.entryInfos.Add(entryInfo);
             }
 
             this.lvEntries.ItemsSource = this.entryInfos.Where(item => Path.GetDirectoryName(item.Path) == (this.entryRootDirectory??"")).ToList();
