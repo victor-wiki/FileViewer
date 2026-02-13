@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FileViewer.Views.DbObjectList"
+             Title="">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="98*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <Picker Title="" x:Name="picker"  HeightRequest="50" HorizontalTextAlignment="Center" BackgroundColor="AliceBlue" SelectedIndexChanged="picker_SelectedIndexChanged">
+        </Picker>
+        
+        <CollectionView x:Name="lvObjects" Grid.Row="1" SelectionMode="None"  Margin="10,10,10,2">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid  RowSpacing="5" ColumnSpacing="20" BackgroundColor="Transparent">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped" NumberOfTapsRequired="1" />
+                        </Grid.GestureRecognizers>
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"></ColumnDefinition>                           
+                        </Grid.ColumnDefinitions>
+
+                        <Label Text="{Binding Name}"  VerticalOptions="Start" Margin="0,3"></Label>
+                       
+                    </Grid>
+
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+
+    </Grid>
+</ContentPage>

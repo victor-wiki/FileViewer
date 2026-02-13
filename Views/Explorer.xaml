@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FileViewer.Views.Explorer"
+             Title="">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem x:Name="tbiBack" Text="" Clicked="tbiBack_Clicked" IsEnabled="False">
+            <ToolbarItem.IconImageSource>
+                <FontImageSource FontFamily="FASolid" Glyph="{StaticResource back}"  Color="Transparent" Size="20"></FontImageSource>
+            </ToolbarItem.IconImageSource>
+        </ToolbarItem>       
+    </ContentPage.ToolbarItems>
+
+    <CollectionView x:Name="lvEntries" Grid.Row="1" Margin="0,2" EmptyView="" SelectionMode="None" >
+        <CollectionView.ItemTemplate>
+            <DataTemplate>
+                <Grid Padding="10">
+                    <Grid.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped" NumberOfTapsRequired="1"></TapGestureRecognizer>
+                    </Grid.GestureRecognizers>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="30" />
+                        <ColumnDefinition Width="*" />                        
+                    </Grid.ColumnDefinitions>
+
+                    <Image  HeightRequest="20" WidthRequest="20">
+                        <Image.Source>
+                            <FontImageSource   FontFamily="FASolid" Glyph="{Binding Icon}"  Color="{Binding IconColor}" Size="10"/>
+                        </Image.Source>
+                    </Image>
+                    <Label Grid.Column="1"  Text="{Binding Name}" />
+                </Grid>
+            </DataTemplate>
+        </CollectionView.ItemTemplate>
+    </CollectionView>
+</ContentPage>

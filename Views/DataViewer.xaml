@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FileViewer.Views.DataViewer"
+             Title="">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="98*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>           
+
+        <Grid x:Name="toolbarGrid" Grid.Row="0" IsVisible="False">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50*" />
+                <ColumnDefinition Width="50*" />
+            </Grid.ColumnDefinitions>
+
+            <Picker Title="" x:Name="picker" IsVisible="False" Grid.Column="0"  HeightRequest="50" HorizontalTextAlignment="Center" BackgroundColor="AliceBlue" SelectedIndexChanged="picker_SelectedIndexChanged">
+            </Picker>
+
+            <HorizontalStackLayout Grid.Column="1" x:Name="pagination">
+                <ImageButton x:Name="btnFirst" IsEnabled="False" Margin="5,1"  WidthRequest="24" HeightRequest="24" VerticalOptions="Center" Clicked="btnFirst_Clicked">
+                    <ImageButton.Source>
+                        <FontImageSource   FontFamily="FASolid" Glyph="{StaticResource first}"  Size="10" Color="DodgerBlue" />
+                    </ImageButton.Source>
+                </ImageButton>
+                
+                <ImageButton x:Name="btnPrevious" IsEnabled="False" Margin="10,1"  WidthRequest="24" HeightRequest="24" VerticalOptions="Center" Clicked="btnPrevious_Clicked">
+                    <ImageButton.Source>
+                        <FontImageSource   FontFamily="FASolid" Glyph="{StaticResource previous}"  Size="10" Color="DodgerBlue" />
+                    </ImageButton.Source>
+                </ImageButton>
+
+                <ImageButton x:Name="btnNext" IsEnabled="False" Margin="10,1"  WidthRequest="24" HeightRequest="24" VerticalOptions="Center" Clicked="btnNext_Clicked">
+                    <ImageButton.Source>
+                        <FontImageSource   FontFamily="FASolid" Glyph="{StaticResource next}"  Size="10"  Color="DodgerBlue"/>
+                    </ImageButton.Source>
+                </ImageButton>
+
+                <ImageButton x:Name="btnLast" IsEnabled="False" Margin="10,1"  WidthRequest="24" HeightRequest="24" VerticalOptions="Center" Clicked="btnLast_Clicked">
+                    <ImageButton.Source>
+                        <FontImageSource   FontFamily="FASolid" Glyph="{StaticResource last}"  Size="10"  Color="DodgerBlue"/>
+                    </ImageButton.Source>
+                </ImageButton>
+            </HorizontalStackLayout>
+        </Grid>
+
+        <ActivityIndicator x:Name="indicator" Grid.Row="1" IsRunning="False"  Color="Blue"  />
+        <WebView x:Name="viewer" Grid.Row="1"></WebView>
+    </Grid>
+</ContentPage>

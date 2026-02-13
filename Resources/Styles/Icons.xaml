@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<?xaml-comp compile="true" ?>
+<ResourceDictionary 
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <x:String x:Key="first">&#xf048;</x:String>
+    <x:String x:Key="previous">&#xf053;</x:String>
+    <x:String x:Key="next">&#xf054;</x:String>
+    <x:String x:Key="last">&#xf051;</x:String>
+    <x:String x:Key="openFile">&#xf07c;</x:String>
+    <x:String x:Key="folder">&#xf07b;</x:String>
+    <x:String x:Key="file">&#xf15b;</x:String>
+    <x:String x:Key="back">&#xf060;</x:String>
+</ResourceDictionary>

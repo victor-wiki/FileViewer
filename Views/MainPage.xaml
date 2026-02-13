@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FileViewer.Views.MainPage">
+
+
+    <VerticalStackLayout>
+       
+        <Border x:Name="openFileControl" Padding="5" Margin="100,200" HeightRequest="100" WidthRequest="100">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="4,4,4,4" />
+            </Border.StrokeShape>
+            <Border.GestureRecognizers>
+                <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped" NumberOfTapsRequired="1" />
+            </Border.GestureRecognizers>
+
+            <VerticalStackLayout>
+
+                <Image Margin="5"  HeightRequest="50" WidthRequest="50" >
+                    <Image.Source>
+                        <FontImageSource  FontFamily="FASolid" Glyph="{StaticResource openFile}"  Color="DodgerBlue" Size="10" />
+                    </Image.Source>
+                </Image>
+                <Label Text="Open File" HorizontalOptions="Center"></Label>
+            </VerticalStackLayout>
+
+        </Border>
+        <ActivityIndicator x:Name="indicator" IsRunning="False"  Color="Blue"  />
+    </VerticalStackLayout>
+
+</ContentPage>
