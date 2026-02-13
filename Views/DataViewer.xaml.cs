@@ -268,6 +268,8 @@ var hot = new Handsontable(container, {
     {
         int index = this.picker.SelectedIndex;
 
+        this.pageNumber = 1;
+
         this.ShowExcelSheetData(index, this.pageNumber);
     }
 }
