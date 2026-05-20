@@ -71,13 +71,13 @@
 		<PackageReference Include="CsvHelper" Version="33.1.0" />
 		<PackageReference Include="Dapper" Version="2.1.66" />
 		<PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.2" />
-		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.120" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.9" />
 		<PackageReference Include="NPOI" Version="2.7.5" />
 		<PackageReference Include="OpenXmlPowerTools.Core" Version="1.0.0" />
 		<PackageReference Include="SharpCompress" Version="0.46.0" />
 		<PackageReference Include="System.Data.OleDb" Version="10.0.2" />
-		<PackageReference Include="Vitvov.Maui.PDFView" Version="1.7.2" />
+		<PackageReference Include="Vitvov.Maui.PDFView" Version="1.7.3" />
 	</ItemGroup>
 
 	<ItemGroup>
