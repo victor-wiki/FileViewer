@@ -7,3 +7,4 @@
 /obj
 /FileViewer.csproj.user
 /FileViewer.csproj.user
+/bin/ARM64/Release/net9.0-android
