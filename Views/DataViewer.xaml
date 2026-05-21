@@ -9,6 +9,7 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="40"></RowDefinition>
+            <RowDefinition Height="30"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>           
 
@@ -45,10 +46,13 @@
                         <FontImageSource   FontFamily="FASolid" Glyph="{StaticResource last}"  Size="10"  Color="DodgerBlue"/>
                     </ImageButton.Source>
                 </ImageButton>
+
+                <Label x:Name="lblPageInfo" IsVisible="False" Margin="10,0"  VerticalOptions="Center"></Label>
             </HorizontalStackLayout>
         </Grid>
 
         <ActivityIndicator x:Name="indicator" Grid.Row="1" IsRunning="False"  Color="Blue"  />
-        <WebView x:Name="viewer" Grid.Row="1"></WebView>
+        <WebView x:Name="viewer2" Grid.Row="1"></WebView>
+        <WebView x:Name="viewer" Grid.Row="2"></WebView>
     </Grid>
 </ContentPage>

@@ -1,6 +1,7 @@
 using FileViewer.DataReader;
 using FileViewer.Helper;
 using FileViewer.Model;
+using System.Threading.Tasks;
 using SqliteDataReader = FileViewer.DAL.SqliteDataReader;
 
 namespace FileViewer.Views;
@@ -17,6 +18,7 @@ public partial class DataViewer : ContentPage
     private int pageCount;
     private int pageNumber = 1;
     private string[] columnHeaders;
+    private IDispatcherTimer timer;
 
     public DataViewer(string filePath, FileOpenMode openMode)
     {
@@ -39,14 +41,66 @@ public partial class DataViewer : ContentPage
         this.Title = databaseObject.Name;
     }
 
-    protected override void OnNavigatedTo(NavigatedToEventArgs args)
+    protected override async void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
 
-        this.ShowContent();
+        this.timer = Dispatcher.CreateTimer();
+        this.timer.Interval = TimeSpan.FromMilliseconds(500);
+        this.timer.Tick += this.Timer_Tick;
+
+        await this.ShowContent();
+
+        this.timer.Start();
     }
 
-    private async void ShowContent()
+    private async void Timer_Tick(object? sender, EventArgs e)
+    {
+        if (this.viewer.IsLoaded)
+        {
+            try
+            {
+                if (await this.HasSelection())
+                {
+                    string content = await this.viewer.EvaluateJavaScriptAsync("document.getElementById('hidCellContent').value;");
+
+                    if (content != "null")
+                    {
+                        var cleanContent = content.Replace("'", "\\'").Replace("\\n", " ").Replace("\\r", " ");
+
+                        await this.viewer2.EvaluateJavaScriptAsync($"var txt=document.getElementById('txtCellContent'); if(txt) txt.value='{cleanContent}';");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+        }
+    }
+
+    private async Task<bool> HasSelection()
+    {
+        try
+        {
+            var hasSelection = await this.viewer.EvaluateJavaScriptAsync("hasSelection");
+
+            return hasSelection == "true";
+        }
+        catch (Exception ex)
+        {
+            return false;
+        }
+    }
+
+    protected override async void OnNavigatedFrom(NavigatedFromEventArgs args)
+    {
+        if (this.timer != null)
+        {
+            this.timer.Stop();
+        }
+    }
+
+    private async Task ShowContent()
     {
         try
         {
@@ -56,15 +110,23 @@ public partial class DataViewer : ContentPage
             switch (this.fileOpenMode)
             {
                 case FileOpenMode.ByExcelParser:
-                    this.ShowExcel();
+                    await this.ShowExcel();
                     break;
                 case FileOpenMode.ByCsvParser:
-                    this.ShowCsv(1);
+                    await this.ShowCsv(1);
                     break;
                 case FileOpenMode.BySqlite:
                 case FileOpenMode.ByAccess:
-                    this.ShowTableData(1);
+                    await this.ShowTableData(1);
                     break;
+            }
+
+            this.toolbarGrid.IsVisible = this.picker.IsVisible || this.pagination.IsVisible;
+
+            if (!this.picker.IsVisible && this.pagination.IsVisible)
+            {
+                this.toolbarGrid.SetColumn(this.pagination, 0);
+                this.toolbarGrid.SetColumnSpan(this.pagination, 2);
             }
         }
         catch (Exception ex)
@@ -78,7 +140,7 @@ public partial class DataViewer : ContentPage
         }
     }
 
-    private void ShowExcel()
+    private async Task ShowExcel()
     {
         var info = ExcelHelper.GetInfo(this.filePath);
 
@@ -98,31 +160,31 @@ public partial class DataViewer : ContentPage
             }
             else
             {
-                this.ShowExcelSheetData(0, 1);
+                await this.ShowExcelSheetData(0, 1);
             }
         }
     }
 
-    private void ShowExcelSheetData(int sheetIndex, int pageNumber)
+    private async Task ShowExcelSheetData(int sheetIndex, int pageNumber)
     {
         this.data = ExcelHelper.ReadSheetData(this.filePath, sheetIndex, pageNumber, this.pageSize);
 
         this.total = this.excelInfo.Sheets[sheetIndex].RowsCount;
 
-        this.ShowData(pageNumber);
+        await this.ShowData(pageNumber);
     }
 
-    private void ShowCsv(int pageNumber)
+    private async Task ShowCsv(int pageNumber)
     {
         DataInfo dataInfo = CsvReadHelper.ReadData(this.filePath, pageNumber, this.pageSize);
 
         this.total = dataInfo.Total;
         this.data = dataInfo.Data;
 
-        this.ShowData(1);
+        await this.ShowData(pageNumber);
     }
 
-    private async void ShowTableData(int pageNumber)
+    private async Task ShowTableData(int pageNumber)
     {
         DataReaderBase reader = null;
 
@@ -144,31 +206,37 @@ public partial class DataViewer : ContentPage
             this.total = dataInfo.Total;
             this.data = dataInfo.Data;
 
-            this.ShowData(1);
+            await this.ShowData(pageNumber);
         }
     }
 
 
-    private void ShowData(int pageNumber)
+    private async Task ShowData(int pageNumber)
     {
         this.pageCount = this.total % this.pageSize == 0 ? this.total / this.pageSize : this.total / this.pageSize + 1;
 
-        this.toolbarGrid.IsVisible = this.pageCount > 1;
-
         this.pagination.IsVisible = this.pageCount > 1;
+
+        this.toolbarGrid.IsVisible = this.picker.IsVisible || this.pagination.IsVisible;
 
         this.btnFirst.IsEnabled = pageNumber != 1;
         this.btnPrevious.IsEnabled = this.pageNumber > 1;
         this.btnNext.IsEnabled = this.pageNumber < this.pageCount;
         this.btnLast.IsEnabled = pageNumber != this.pageCount;
 
+        if (DeviceInfo.Current.Platform == DevicePlatform.WinUI || !this.picker.IsVisible)
+        {
+            this.lblPageInfo.IsVisible = true;
+            this.lblPageInfo.Text = $"({pageNumber}/{this.pageCount})";
+        }
+
         string dataArray = DataHelper.ConvertDictionaryToArraryString(this.data);
 
-        this.ShowGridData(dataArray);
+        await this.ShowGridData(dataArray);
     }
 
 
-    private async void ShowGridData(string data)
+    private async Task ShowGridData(string data)
     {
         string css = await this.ReadResourceFileContent("handsontable/handsontable.min.css");
         string js = await this.ReadResourceFileContent("handsontable/handsontable.min.js");
@@ -185,10 +253,12 @@ public partial class DataViewer : ContentPage
 " + js + @"
 </script>
 </head>
-<body>
- <div id='content'/>
+<body>  
+  <input id='hidCellContent' type='hidden' />
+  <div id='content'/>
 </body>
 <script>
+var hasSelection=false;
 
 var container = document.getElementById('content');
 var hot = new Handsontable(container, {
@@ -198,8 +268,21 @@ var hot = new Handsontable(container, {
   manualColumnResize:true,
   colHeaders: " + columnHeaders + @",
   colWidths: 100,
-  maxRows: " + this.pageSize + @"
-})
+  maxRows: " + this.pageSize + @",
+  search: true,
+  afterSelectionEnd: function (row, col) {
+      hasSelection=true;
+
+      var content =hot.getDataAtCell(row, col);  
+
+      if(content == null){
+         content='';
+      }
+
+      document.getElementById('hidCellContent').value = content;
+  }  
+});
+
 </script>
 <style>
 .hot-display-license-info {display: none !important;}
@@ -207,7 +290,12 @@ var hot = new Handsontable(container, {
 </style>
 </html>";
 
+        string viwer2Html =
+@"<style>body {overflow: hidden;}</style>
+<input id='txtCellContent' style='width:100%;'/>";
+
         this.viewer.Source = new HtmlWebViewSource { Html = html };
+        this.viewer2.Source = new HtmlWebViewSource { Html = viwer2Html };
     }
 
     private async Task<string> ReadResourceFileContent(string path)
@@ -218,58 +306,58 @@ var hot = new Handsontable(container, {
         }
     }
 
-    private void ShowPagedData(int pageNumber)
+    private async Task ShowPagedData(int pageNumber)
     {
         switch (this.fileOpenMode)
         {
             case FileOpenMode.ByExcelParser:
-                this.ShowExcelSheetData(this.picker.SelectedIndex, pageNumber);
+                await this.ShowExcelSheetData((this.picker.SelectedIndex == -1 ? 0 : this.picker.SelectedIndex), pageNumber);
                 break;
             case FileOpenMode.ByCsvParser:
-                this.ShowCsv(pageNumber);
+                await this.ShowCsv(pageNumber);
                 break;
             case FileOpenMode.BySqlite:
             case FileOpenMode.ByAccess:
-                this.ShowTableData(pageNumber);
+                await this.ShowTableData(pageNumber);
                 break;
         }
     }
 
-    private void btnFirst_Clicked(object sender, EventArgs e)
+    private async void btnFirst_Clicked(object sender, EventArgs e)
     {
         this.pageNumber = 1;
 
-        this.ShowPagedData(this.pageNumber);
+        await this.ShowPagedData(this.pageNumber);
     }
 
-    private void btnPrevious_Clicked(object sender, EventArgs e)
+    private async void btnPrevious_Clicked(object sender, EventArgs e)
     {
         this.pageNumber--;
 
-        this.ShowPagedData(this.pageNumber);
+        await this.ShowPagedData(this.pageNumber);
     }
 
-    private void btnNext_Clicked(object sender, EventArgs e)
+    private async void btnNext_Clicked(object sender, EventArgs e)
     {
         this.pageNumber++;
 
-        this.ShowPagedData(this.pageNumber);
+        await this.ShowPagedData(this.pageNumber);
     }
 
 
-    private void btnLast_Clicked(object sender, EventArgs e)
+    private async void btnLast_Clicked(object sender, EventArgs e)
     {
         this.pageNumber = this.pageCount;
 
-        this.ShowPagedData(this.pageNumber);
+        await this.ShowPagedData(this.pageNumber);
     }
 
-    private void picker_SelectedIndexChanged(object sender, EventArgs e)
+    private async void picker_SelectedIndexChanged(object sender, EventArgs e)
     {
         int index = this.picker.SelectedIndex;
 
         this.pageNumber = 1;
 
-        this.ShowExcelSheetData(index, this.pageNumber);
+        await this.ShowExcelSheetData(index, this.pageNumber);
     }
 }

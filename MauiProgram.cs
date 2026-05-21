@@ -12,6 +12,7 @@ namespace FileViewer
 
             builder
                 .UseMauiApp<App>()
+                .UseMauiCommunityToolkit()
                 .UseMauiCommunityToolkitMediaElement()
                 .UseMauiPdfView()
                 .ConfigureFonts(fonts =>

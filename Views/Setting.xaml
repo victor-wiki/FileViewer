@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="FileViewer.Views.Setting"
+             Title="">
+    
+    <ScrollView>
+        <VerticalStackLayout>
+            
+            <toolkit:Expander IsExpanded="True">
+                <toolkit:Expander.Header>
+                    <Border Padding="2" Margin="10,5" BackgroundColor="AliceBlue">
+
+                        <Label Text="General"  HorizontalTextAlignment="Start" FontSize="18" Padding="10,5" />
+
+                    </Border>
+                </toolkit:Expander.Header>
+
+                <Grid RowDefinitions="*" Margin="20,2" RowSpacing="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="60"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+
+                    <Label VerticalOptions="Center">Enable Log</Label>
+                    <Switch x:Name="switchEnableLog" Grid.Column="1" Toggled="switchEnableLog_Toggled"></Switch>
+
+                </Grid>
+
+            </toolkit:Expander>
+
+            <toolkit:Expander IsExpanded="True">
+                <toolkit:Expander.Header>
+                    <Border Padding="2" Margin="10,5" BackgroundColor="AliceBlue">
+
+                        <Label Text="Log Manager"  HorizontalTextAlignment="Start" FontSize="18" Padding="10,5" />
+
+                    </Border>
+                </toolkit:Expander.Header>
+
+                <VerticalStackLayout>
+                    <Border Padding="2" Margin="15,5" BackgroundColor="WhiteSmoke">
+
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="TapGestureRecognizer_ViewLogTapped" NumberOfTapsRequired="1" />
+                        </Border.GestureRecognizers>
+
+                        <Label Text="View Log"  HorizontalTextAlignment="Start" FontSize="18" Padding="10,5" />
+
+                    </Border>
+
+                    <Border Padding="2" Margin="15,5" BackgroundColor="WhiteSmoke">
+
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="TapGestureRecognizer_ClearLogTapped" NumberOfTapsRequired="1" />
+                        </Border.GestureRecognizers>
+
+                        <Label Text="Clear Log"  HorizontalTextAlignment="Start" FontSize="18" Padding="10,5" />
+
+                    </Border>
+
+                </VerticalStackLayout>
+
+            </toolkit:Expander>
+        </VerticalStackLayout>
+    </ScrollView>
+  
+</ContentPage>

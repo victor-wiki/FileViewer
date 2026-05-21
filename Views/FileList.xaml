@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="FileViewer.Views.FileList"
+             Title="文件列表">
+    
+    <ScrollView>
+        <VerticalStackLayout>
+            <CollectionView x:Name="lvFile" SelectionMode="None" EmptyView="No data" Margin="3,0">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+
+                        <Border Padding="2" Margin="5,5" BackgroundColor="AliceBlue">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="TapGestureRecognizer_Tapped" NumberOfTapsRequired="1" />
+                            </Border.GestureRecognizers>
+                            
+                            <Grid>
+                             
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+
+                                <Label Text="{Binding Name}"  HorizontalTextAlignment="Start" FontSize="14"  Padding="2,5" />
+
+                            </Grid>                          
+
+                        </Border>
+                        
+                      
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </VerticalStackLayout>
+    </ScrollView>    
+</ContentPage>

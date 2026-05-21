@@ -12,4 +12,6 @@
     <x:String x:Key="folder">&#xf07b;</x:String>
     <x:String x:Key="file">&#xf15b;</x:String>
     <x:String x:Key="back">&#xf060;</x:String>
+    <x:String x:Key="setting">&#xf013;</x:String>
+    <x:String x:Key="home">&#xf015;</x:String>
 </ResourceDictionary>

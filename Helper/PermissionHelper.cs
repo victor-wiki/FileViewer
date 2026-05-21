@@ -1,4 +1,4 @@
-﻿namespace FileViwer.Helper
+﻿namespace FileViewer.Helper
 {
     public enum PermissionType
     {

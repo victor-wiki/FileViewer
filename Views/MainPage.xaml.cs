@@ -1,6 +1,5 @@
 ﻿using FileViewer.Helper;
 using FileViewer.Model;
-using FileViwer.Helper;
 
 namespace FileViewer.Views
 {

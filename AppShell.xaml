@@ -4,11 +4,21 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:FileViewer.Views"
-    Title="FileViewer">
+    Shell.FlyoutBehavior="Disabled"  
+    Title="">
 
-    <ShellContent
-        Title=""
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
-
+    <TabBar>
+        <Tab Title="Home">
+            <Tab.Icon>
+                <FontImageSource FontFamily="FASolid" Glyph="{StaticResource home}"  />
+            </Tab.Icon>
+            <ShellContent Title="Home" ContentTemplate="{DataTemplate local:MainPage}"  Route="MainPage" />           
+        </Tab> 
+        <Tab Title="Setting">
+            <Tab.Icon>
+                <FontImageSource FontFamily="FASolid" Glyph="{StaticResource setting}"  />
+            </Tab.Icon>
+            <ShellContent  Title="Setting" ContentTemplate="{DataTemplate local:Setting }" Route="Setting" />
+        </Tab>
+    </TabBar>  
 </Shell>
