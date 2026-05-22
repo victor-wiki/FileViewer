@@ -230,46 +230,74 @@ public partial class DataViewer : ContentPage
             this.lblPageInfo.Text = $"({pageNumber}/{this.pageCount})";
         }
 
-        string dataArray = DataHelper.ConvertDictionaryToArraryString(this.data);
-
-        await this.ShowGridData(dataArray);
+        await this.ShowGridData();
     }
 
 
-    private async Task ShowGridData(string data)
+    private async Task ShowGridData()
     {
-        string css = await this.ReadResourceFileContent("handsontable/handsontable.min.css");
-        string js = await this.ReadResourceFileContent("handsontable/handsontable.min.js");
+        string dataArray = null;
+        string strMergeCell = string.Empty;
+        int columnWidth = 100;
+
+        int columnCount = 0;
+
+        if (this.columnHeaders != null)
+        {
+            columnCount = this.columnHeaders.Length;
+        }
+        else if (this.data != null && this.data.Count > 0)
+        {
+            columnCount = this.data.FirstOrDefault().Value.Keys.Count;
+        }
+
+        int tableWidth = columnCount * columnWidth + columnCount - 1;
+
+        if (this.data.Count > 0)
+        {
+            dataArray = DataHelper.ConvertDictionaryToArraryString(this.data);
+        }
+        else
+        {
+            dataArray = $"[['No data'{(columnCount > 1 ? $",{string.Join(",", Enumerable.Repeat("null", columnCount - 1))}" : "")}]]";
+
+            strMergeCell =
+ @",mergeCells: [ {row: 0, col: 0, rowspan: 1, colspan: " + columnCount + @"}],
+  cell: [ { row: 0, col: 0, className: 'htCenter' }]";
+        }
+
+        string css = @"<link rel=""stylesheet"" href=""handsontable/handsontable.full.min.css"">";
+        string js = @"<script type=""text/javascript""  src=""handsontable/handsontable.full.min.js""></script>";
 
         string columnHeaders = this.columnHeaders == null ? "false" : "[" + string.Join(",", this.columnHeaders.Select(item => $"'{item}'")) + "]";
 
         string html =
 @"<html>
 <head>
-  <style>
 " + css + @"
-</style>
-<script>
 " + js + @"
-</script>
 </head>
 <body>  
   <input id='hidCellContent' type='hidden' />
-  <div id='content'/>
+  <div id='divControls' class=""controls"" style='display:none;margin-bottom:2px;'>
+     <input id='txtKeyword' type='search' placeholder='Search'>
+  </div>
+  <div id='content' style='width:" + tableWidth + @"px;'/>
 </body>
 <script>
+var isDataLoaded =false;
 var hasSelection=false;
 
 var container = document.getElementById('content');
 var hot = new Handsontable(container, {
   readOnly:true,
-  data: " + data + @",
+  data: " + dataArray + @",
   rowHeaders: false,
-  manualColumnResize:true,
+  manualColumnResize:true, 
   colHeaders: " + columnHeaders + @",
-  colWidths: 100,
+  colWidths: " + columnWidth + @",
   maxRows: " + this.pageSize + @",
-  search: true,
+  search: true, 
   afterSelectionEnd: function (row, col) {
       hasSelection=true;
 
@@ -280,13 +308,38 @@ var hot = new Handsontable(container, {
       }
 
       document.getElementById('hidCellContent').value = content;
-  }  
+  },
+  afterLoadData: function(firstLoad) {
+    isDataLoaded = true;
+  },
+  afterGetColHeader: function (col, TH) {
+    TH.addEventListener('click', function () {
+      hasSelection=true;
+      var columnName = hot.getColHeader(col);
+      document.getElementById('hidCellContent').value = columnName;
+  });
+  }" + strMergeCell + @"  
 });
 
+  var txtKeyword =  document.getElementById('txtKeyword');
+
+  txtKeyword.addEventListener('input', (event) => {  
+
+    var search = hot.getPlugin('search');
+
+    var queryResult = search.query(event.target.value);
+
+    hot.render();
+});
 </script>
 <style>
+:where(.ht-theme-main){
+  --ht-background-secondary-color:#ffffff !important;
+}
+
 .hot-display-license-info {display: none !important;}
 .handsontable .htDimmed { color: #000000; }
+.handsontable td.htSearchResult {background-color:#fcedd9 !imporant; }
 </style>
 </html>";
 
@@ -296,14 +349,6 @@ var hot = new Handsontable(container, {
 
         this.viewer.Source = new HtmlWebViewSource { Html = html };
         this.viewer2.Source = new HtmlWebViewSource { Html = viwer2Html };
-    }
-
-    private async Task<string> ReadResourceFileContent(string path)
-    {
-        using (StreamReader sr = new StreamReader(await FileSystem.Current.OpenAppPackageFileAsync(path)))
-        {
-            return await sr.ReadToEndAsync();
-        }
     }
 
     private async Task ShowPagedData(int pageNumber)
@@ -359,5 +404,35 @@ var hot = new Handsontable(container, {
         this.pageNumber = 1;
 
         await this.ShowExcelSheetData(index, this.pageNumber);
+    }
+
+    private async void tbiShowSearchControl_Clicked(object sender, EventArgs e)
+    {
+        if (this.viewer.IsLoaded)
+        {
+            try
+            {
+                await this.viewer.EvaluateJavaScriptAsync("var div=document.getElementById('divControls'); if(div){ var display=div.style.display;  div.style.display=display=='block'?'none':'block'; } ");
+            }
+            catch (Exception ex)
+            {
+               
+            }
+        }
+    }
+
+    private async void tbiColumnSize_Clicked(object sender, EventArgs e)
+    {
+        if (this.viewer.IsLoaded)
+        {
+            try
+            {
+                await this.viewer.EvaluateJavaScriptAsync("if(isDataLoaded){var autoColumnSize = hot.getSettings().autoColumnSize;  hot.updateSettings({ autoColumnSize:autoColumnSize?false:true, colWidths:!autoColumnSize?undefined:100 }); }");
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }       
     }
 }

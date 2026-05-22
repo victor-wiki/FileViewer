@@ -60,7 +60,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiCss Remove="Resources\Raw\handsontable\handsontable.min.css" />
+	  <MauiCss Remove="Resources\Raw\handsontable\handsontable.full.min.css" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -14,4 +14,6 @@
     <x:String x:Key="back">&#xf060;</x:String>
     <x:String x:Key="setting">&#xf013;</x:String>
     <x:String x:Key="home">&#xf015;</x:String>
+    <x:String x:Key="search">&#xf002;</x:String>
+    <x:String x:Key="columns">&#xf0db;</x:String>
 </ResourceDictionary>

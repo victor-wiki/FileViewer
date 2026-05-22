@@ -3,13 +3,27 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="FileViewer.Views.DataViewer"
              Title="">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem x:Name="tbiSearch" Text="" Clicked="tbiShowSearchControl_Clicked">
+            <ToolbarItem.IconImageSource>
+                <FontImageSource FontFamily="FASolid" Glyph="{StaticResource search}"  Color="DodgerBlue" Size="20"></FontImageSource>
+            </ToolbarItem.IconImageSource>
+        </ToolbarItem>
+        <ToolbarItem x:Name="tbiColumnSize" Text="" Clicked="tbiColumnSize_Clicked">
+            <ToolbarItem.IconImageSource>
+                <FontImageSource FontFamily="FASolid" Glyph="{StaticResource columns}"  Color="DodgerBlue" Size="20"></FontImageSource>
+            </ToolbarItem.IconImageSource>
+        </ToolbarItem>
+    </ContentPage.ToolbarItems>
+    
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="98*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="40"></RowDefinition>
-            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition Height="40"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>           
 
@@ -50,9 +64,9 @@
                 <Label x:Name="lblPageInfo" IsVisible="False" Margin="10,0"  VerticalOptions="Center"></Label>
             </HorizontalStackLayout>
         </Grid>
-
-        <ActivityIndicator x:Name="indicator" Grid.Row="1" IsRunning="False"  Color="Blue"  />
-        <WebView x:Name="viewer2" Grid.Row="1"></WebView>
+     
+        <WebView x:Name="viewer2" Grid.Row="1"></WebView>        
+        <ActivityIndicator x:Name="indicator" Grid.Row="2" IsRunning="False"  Color="Blue"  />
         <WebView x:Name="viewer" Grid.Row="2"></WebView>
     </Grid>
 </ContentPage>

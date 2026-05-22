@@ -34,7 +34,7 @@
                 <toolkit:Expander.Header>
                     <Border Padding="2" Margin="10,5" BackgroundColor="AliceBlue">
 
-                        <Label Text="Log Manager"  HorizontalTextAlignment="Start" FontSize="18" Padding="10,5" />
+                        <Label Text="Log Management"  HorizontalTextAlignment="Start" FontSize="18" Padding="10,5" />
 
                     </Border>
                 </toolkit:Expander.Header>

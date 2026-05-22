@@ -135,7 +135,12 @@ namespace FileViewer.DAL
 
                 DataTable table = new DataTable();
 
-                table.Load(reader);
+                DataSet dataSet = new DataSet();
+                dataSet.EnforceConstraints = false;
+
+                dataSet.Tables.Add(table);
+
+                table.Load(reader, 0);
 
                 dataInfo.Data = this.ConvertDataTableToDictionary(table, columns);
 
