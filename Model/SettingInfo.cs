@@ -2,6 +2,7 @@
 {
     public class SettingInfo
     {
-        public bool EnableLog { get; set; }       
+        public bool EnableLog { get; set; }    
+        public bool AutoColumnSize { get; set; }
     }   
 }

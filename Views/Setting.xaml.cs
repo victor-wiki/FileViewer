@@ -14,12 +14,21 @@ public partial class Setting : ContentPage
 
         this.setting = SettingManager.GetSetting();
 
-       // this.switchEnableLog.IsToggled = this.setting.EnableLog;
+        this.switchEnableLog.IsToggled = this.setting.EnableLog;
+        this.switchAutoColumnSize.IsToggled = this.setting.AutoColumnSize;
     }
 
     private void switchEnableLog_Toggled(object sender, ToggledEventArgs e)
     {
         this.setting.EnableLog = e.Value;
+
+        this.Save();
+    }
+
+
+    private void switchAutoColumnSize_Toggled(object sender, ToggledEventArgs e)
+    {
+        this.setting.AutoColumnSize = e.Value;
 
         this.Save();
     }

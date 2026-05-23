@@ -1,6 +1,8 @@
 using FileViewer.DataReader;
 using FileViewer.Helper;
+using FileViewer.Manager;
 using FileViewer.Model;
+using System.Text;
 using System.Threading.Tasks;
 using SqliteDataReader = FileViewer.DAL.SqliteDataReader;
 
@@ -19,6 +21,7 @@ public partial class DataViewer : ContentPage
     private int pageNumber = 1;
     private string[] columnHeaders;
     private IDispatcherTimer timer;
+    private SettingInfo setting;
 
     public DataViewer(string filePath, FileOpenMode openMode)
     {
@@ -27,7 +30,9 @@ public partial class DataViewer : ContentPage
         this.filePath = filePath;
         this.fileOpenMode = openMode;
 
-        this.Title = Path.GetFileName(filePath);
+        this.lblTitle.Text = Path.GetFileName(filePath);
+
+        this.Init();
     }
 
     public DataViewer(string filePath, FileOpenMode openMode, DatabaseObject databaseObject)
@@ -38,12 +43,14 @@ public partial class DataViewer : ContentPage
         this.fileOpenMode = openMode;
         this.databaseObject = databaseObject;
 
-        this.Title = databaseObject.Name;
+        this.lblTitle.Text = databaseObject.Name;
+
+        this.Init();
     }
 
-    protected override async void OnNavigatedTo(NavigatedToEventArgs args)
+    private async void Init()
     {
-        base.OnNavigatedTo(args);
+        this.setting = SettingManager.GetSetting();
 
         this.timer = Dispatcher.CreateTimer();
         this.timer.Interval = TimeSpan.FromMilliseconds(500);
@@ -52,7 +59,7 @@ public partial class DataViewer : ContentPage
         await this.ShowContent();
 
         this.timer.Start();
-    }
+    }   
 
     private async void Timer_Tick(object? sender, EventArgs e)
     {
@@ -92,7 +99,7 @@ public partial class DataViewer : ContentPage
         }
     }
 
-    protected override async void OnNavigatedFrom(NavigatedFromEventArgs args)
+    protected override void OnNavigatedFrom(NavigatedFromEventArgs args)
     {
         if (this.timer != null)
         {
@@ -104,8 +111,8 @@ public partial class DataViewer : ContentPage
     {
         try
         {
-            this.viewer.IsVisible = false;
             this.indicator.IsRunning = true;
+            this.indicator.IsVisible = true;
 
             switch (this.fileOpenMode)
             {
@@ -135,8 +142,9 @@ public partial class DataViewer : ContentPage
         }
         finally
         {
+            this.MainGrid.RowDefinitions[2].Height = new GridLength(0, GridUnitType.Absolute);
             this.indicator.IsRunning = false;
-            this.viewer.IsVisible = true;
+            this.indicator.IsVisible = false;
         }
     }
 
@@ -239,6 +247,10 @@ public partial class DataViewer : ContentPage
         string dataArray = null;
         string strMergeCell = string.Empty;
         int columnWidth = 100;
+        int rowHeight = 30;
+        bool autoColumnSize = this.setting.AutoColumnSize;
+        bool isMobile = DeviceInfo.Current.Platform == DevicePlatform.Android || DeviceInfo.Current.Platform == DevicePlatform.iOS;
+        string strColumnWidth = autoColumnSize ? "undefined" : columnWidth.ToString();
 
         int columnCount = 0;
 
@@ -252,6 +264,7 @@ public partial class DataViewer : ContentPage
         }
 
         int tableWidth = columnCount * columnWidth + columnCount - 1;
+        int tableHeight = (this.data.Count + (this.columnHeaders == null ? 0 : 1)) * rowHeight;
 
         if (this.data.Count > 0)
         {
@@ -282,21 +295,33 @@ public partial class DataViewer : ContentPage
   <div id='divControls' class=""controls"" style='display:none;margin-bottom:2px;'>
      <input id='txtKeyword' type='search' placeholder='Search'>
   </div>
-  <div id='content' style='width:" + tableWidth + @"px;'/>
+  <div id='content' style='width:" + tableWidth + @"px;height:" + tableHeight + @"px;'/>
 </body>
 <script>
-var isDataLoaded =false;
-var hasSelection=false;
+
+var isDataLoaded = false;
+var isInited = false;
+var hasSelection = false;
+var isMobile = " + isMobile.ToString().ToLower() + @";
+var tableDefaultWidth = " + tableWidth + @";
+var tableDefaultHeight = " + tableHeight + @";
+var wordWrap = " + (!isMobile).ToString().ToLower() + @";
+var rowHeight=" + rowHeight + @";
+var autoColumnSize = "+ autoColumnSize.ToString().ToLower() + @";
 
 var container = document.getElementById('content');
+
 var hot = new Handsontable(container, {
   readOnly:true,
   data: " + dataArray + @",
   rowHeaders: false,
+  autoColumnSize: autoColumnSize,
   manualColumnResize:true, 
   colHeaders: " + columnHeaders + @",
-  colWidths: " + columnWidth + @",
+  colWidths: " + strColumnWidth + @",
   maxRows: " + this.pageSize + @",
+  wordWrap: wordWrap,
+  rowHeights: rowHeight,  
   search: true, 
   afterSelectionEnd: function (row, col) {
       hasSelection=true;
@@ -309,8 +334,15 @@ var hot = new Handsontable(container, {
 
       document.getElementById('hidCellContent').value = content;
   },
-  afterLoadData: function(firstLoad) {
+  afterLoadData: function(firstLoad) {   
     isDataLoaded = true;
+  },
+  afterInit: function () {
+     if(isInited == false && isMobile == true && autoColumnSize == true){
+        setTableWidthByAutoColumnSize(this);
+    }   
+
+    isInited = true;
   },
   afterGetColHeader: function (col, TH) {
     TH.addEventListener('click', function () {
@@ -321,16 +353,31 @@ var hot = new Handsontable(container, {
   }" + strMergeCell + @"  
 });
 
-  var txtKeyword =  document.getElementById('txtKeyword');
+     function getTableTotalWidth(t){
+        var totalWidth=0;
+        var columnCount = t.countCols();
+        for (var col = 0; col < columnCount ; col++) {
+            totalWidth += t.getColWidth(col);
+        }
 
-  txtKeyword.addEventListener('input', (event) => {  
+        return totalWidth;
+    };
 
-    var search = hot.getPlugin('search');
+    function setTableWidthByAutoColumnSize (t){
+        var columnCount = t.countCols();
+        container.style.width = (getTableTotalWidth(t) + columnCount -1) + 'px';
+    };
 
-    var queryResult = search.query(event.target.value);
+    var txtKeyword =  document.getElementById('txtKeyword');
 
-    hot.render();
-});
+    txtKeyword.addEventListener('input', (event) => {  
+
+        var search = hot.getPlugin('search');
+
+        var queryResult = search.query(event.target.value);
+
+        hot.render();
+    });
 </script>
 <style>
 :where(.ht-theme-main){
@@ -389,7 +436,6 @@ var hot = new Handsontable(container, {
         await this.ShowPagedData(this.pageNumber);
     }
 
-
     private async void btnLast_Clicked(object sender, EventArgs e)
     {
         this.pageNumber = this.pageCount;
@@ -406,33 +452,64 @@ var hot = new Handsontable(container, {
         await this.ShowExcelSheetData(index, this.pageNumber);
     }
 
-    private async void tbiShowSearchControl_Clicked(object sender, EventArgs e)
+    private void tbiShowSearchControl_Clicked(object sender, EventArgs e)
     {
-        if (this.viewer.IsLoaded)
-        {
-            try
-            {
-                await this.viewer.EvaluateJavaScriptAsync("var div=document.getElementById('divControls'); if(div){ var display=div.style.display;  div.style.display=display=='block'?'none':'block'; } ");
-            }
-            catch (Exception ex)
-            {
-               
-            }
-        }
+        string script =
+@"var div=document.getElementById('divControls'); 
+  if(div){ 
+    var display=div.style.display;  
+    div.style.display=display=='block'?'none':'block'; 
+  }";
+
+        this.ExecuteJavaScript(this.viewer, script);
     }
 
-    private async void tbiColumnSize_Clicked(object sender, EventArgs e)
+    private void tbiColumnSize_Clicked(object sender, EventArgs e)
     {
-        if (this.viewer.IsLoaded)
+        string script =
+@"if(isDataLoaded){
+    var autoColumnSize = hot.getSettings().autoColumnSize;  
+
+    hot.updateSettings({ autoColumnSize:autoColumnSize?false:true, colWidths:!autoColumnSize?undefined:100 });
+
+    if(autoColumnSize){
+      container.style.width=tableDefaultWidth + 'px';  
+    }else{
+      setTableWidthByAutoColumnSize(hot);
+    }
+}";
+
+        this.ExecuteJavaScript(this.viewer, script);
+    }
+
+    private async void ExecuteJavaScript(WebView webView, string script)
+    {
+        if (webView.IsLoaded)
         {
             try
             {
-                await this.viewer.EvaluateJavaScriptAsync("if(isDataLoaded){var autoColumnSize = hot.getSettings().autoColumnSize;  hot.updateSettings({ autoColumnSize:autoColumnSize?false:true, colWidths:!autoColumnSize?undefined:100 }); }");
+                StringBuilder sb = new StringBuilder();
+
+                var lines = script.Split(Environment.NewLine);
+
+                foreach (var line in lines )
+                {
+                    if(line.TrimStart().StartsWith("//"))
+                    {
+                        continue;
+                    }
+
+                    sb.AppendLine(line);
+                }
+
+                string str = sb.ToString().Replace(Environment.NewLine, " ");
+
+                await webView.EvaluateJavaScriptAsync(str);
             }
             catch (Exception ex)
             {
 
             }
-        }       
+        }
     }
 }

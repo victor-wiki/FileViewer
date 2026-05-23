@@ -34,6 +34,28 @@
                 <toolkit:Expander.Header>
                     <Border Padding="2" Margin="10,5" BackgroundColor="AliceBlue">
 
+                        <Label Text="Data Viewer"  HorizontalTextAlignment="Start" FontSize="18" Padding="10,5" />
+
+                    </Border>
+                </toolkit:Expander.Header>
+
+                <Grid RowDefinitions="*" Margin="20,2" RowSpacing="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="60"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+
+                    <Label VerticalOptions="Center">Auto Column Size</Label>
+                    <Switch x:Name="switchAutoColumnSize" Grid.Column="1" Toggled="switchAutoColumnSize_Toggled"></Switch>
+
+                </Grid>
+
+            </toolkit:Expander>
+
+            <toolkit:Expander IsExpanded="True">
+                <toolkit:Expander.Header>
+                    <Border Padding="2" Margin="10,5" BackgroundColor="AliceBlue">
+
                         <Label Text="Log Management"  HorizontalTextAlignment="Start" FontSize="18" Padding="10,5" />
 
                     </Border>

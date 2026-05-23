@@ -4,6 +4,17 @@
              x:Class="FileViewer.Views.DataViewer"
              Title="">
 
+    <Shell.TitleView>
+        <HorizontalStackLayout VerticalOptions="Fill"  >
+            <Label x:Name="lblTitle" Text="" TextColor="Black"
+                   HorizontalTextAlignment="Start"
+                   VerticalTextAlignment="Center"
+                   VerticalOptions="Center"
+                   HeightRequest="30"
+                   FontSize="14" />
+        </HorizontalStackLayout>
+    </Shell.TitleView>
+
     <ContentPage.ToolbarItems>
         <ToolbarItem x:Name="tbiSearch" Text="" Clicked="tbiShowSearchControl_Clicked">
             <ToolbarItem.IconImageSource>
@@ -17,11 +28,12 @@
         </ToolbarItem>
     </ContentPage.ToolbarItems>
     
-    <Grid>
+    <Grid x:Name="MainGrid">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="98*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
+            <RowDefinition Height="40"></RowDefinition>
             <RowDefinition Height="40"></RowDefinition>
             <RowDefinition Height="40"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
@@ -66,7 +78,7 @@
         </Grid>
      
         <WebView x:Name="viewer2" Grid.Row="1"></WebView>        
-        <ActivityIndicator x:Name="indicator" Grid.Row="2" IsRunning="False"  Color="Blue"  />
-        <WebView x:Name="viewer" Grid.Row="2"></WebView>
+        <ActivityIndicator x:Name="indicator" Grid.Row="2" IsRunning="False" IsVisible="False"  Color="Blue"  />
+        <WebView x:Name="viewer" Grid.Row="3"></WebView>
     </Grid>
 </ContentPage>
