@@ -10,7 +10,6 @@ public partial class Explorer : ContentPage
 {
     private string filePath;
     private List<ZipEntryInfo> entryInfos = new List<ZipEntryInfo>();
-    private string entryRootDirectory = null;
     private string currentEntryDirectory = null;
     public Explorer(string filePath)
     {
@@ -33,16 +32,6 @@ public partial class Explorer : ContentPage
                 string name = Path.GetFileName(key.TrimEnd('/'));
                 string path = entry.Key.TrimEnd('/');
 
-                if (this.entryRootDirectory == null)
-                {
-                    if (path.Contains("/"))
-                    {
-                        int index = path.IndexOf("/");
-
-                        this.entryRootDirectory = path.Substring(0, index);
-                    }
-                }
-
                 ZipEntryInfo entryInfo = new ZipEntryInfo()
                 {
                     IsFile = !entry.IsDirectory,
@@ -54,10 +43,31 @@ public partial class Explorer : ContentPage
                 this.entryInfos.Add(entryInfo);
             }
 
-            this.lvEntries.ItemsSource = this.entryInfos.Where(item => Path.GetDirectoryName(item.Path) == (this.entryRootDirectory??"")).ToList();
+            List<string> rootFolderNames = new List<string>();
+
+            foreach (var entry in this.entryInfos)
+            {
+                int index = entry.Path.IndexOf("/");
+
+                if (index > 0)
+                {
+                    string rootFolder = entry.Path.Substring(0, index);
+
+                    if (!rootFolderNames.Contains(rootFolder))
+                    {
+                        rootFolderNames.Add(rootFolder);
+                    }
+                }
+            }
+
+            var rootFolders = this.entryInfos.Where(item => rootFolderNames.Contains(item.Path)).OrderBy(item => item.Name);
+
+            var rootFiles = this.entryInfos.Where(item => item.IsFile && item.Path.IndexOf("/") == -1).OrderBy(item => item.Name);
+
+            this.lvEntries.ItemsSource = rootFolders.Concat(rootFiles);
         }
-    }  
-    
+    }
+
     private SharpCompress.Readers.ReaderOptions GetZipOptions()
     {
         var cultureInfo = System.Globalization.CultureInfo.CurrentCulture;
@@ -84,13 +94,14 @@ public partial class Explorer : ContentPage
 
         ZipEntryInfo entryInfo = grid.BindingContext as ZipEntryInfo;
 
-        if(!entryInfo.IsFile)
+        if (!entryInfo.IsFile)
         {
             this.currentEntryDirectory = entryInfo.Path;
 
             var infos = this.entryInfos.Where(item => this.GetDirectoryPath(item.Path) == entryInfo.Path && item != entryInfo);
 
-            this.lvEntries.ItemsSource = infos;
+            this.lvEntries.ItemsSource = infos.Where(item=>item.IsFile == false).OrderBy(item=>item.Name)
+                .Concat(infos.Where(item=>item.IsFile).OrderBy(item=>item.Name));
 
             this.SetToolbarItemStatus(this.tbiBack, true);
         }
@@ -99,7 +110,7 @@ public partial class Explorer : ContentPage
             string extension = Path.GetExtension(entryInfo.Path).ToLower();
 
             FileOpenMode openMode = FileHelper.GetFileOpenModeByExtension(extension);
-          
+
             using (var zipfile = ArchiveFactory.OpenArchive(this.filePath, this.GetZipOptions()))
             {
                 var entry = zipfile.Entries.FirstOrDefault(item => item.Key == entryInfo.Key);
@@ -125,7 +136,7 @@ public partial class Explorer : ContentPage
 
                         await Navigation.PushAsync(page);
                     }
-                    else if(openMode == FileOpenMode.ByWordParser)
+                    else if (openMode == FileOpenMode.ByWordParser)
                     {
                         WordViewer page = (WordViewer)Activator.CreateInstance(typeof(WordViewer), ms, entryInfo.Name);
 
@@ -143,7 +154,7 @@ public partial class Explorer : ContentPage
                         return;
                     }
                 }
-            }           
+            }
         }
     }
 
@@ -164,7 +175,12 @@ public partial class Explorer : ContentPage
     {
         int index = path.LastIndexOf("/");
 
-        return path.Substring(0, index);
+        if (index >= 0)
+        {
+            return path.Substring(0, index);
+        }
+
+        return "/";
     }
 
     private void SetToolbarItemStatus(ToolbarItem item, bool enable)
@@ -179,7 +195,7 @@ public partial class Explorer : ContentPage
     {
         string parentDirectory = this.GetDirectoryPath(this.currentEntryDirectory);
 
-        if(!parentDirectory.Contains("/"))
+        if (!parentDirectory.Contains("/"))
         {
             this.SetToolbarItemStatus(this.tbiBack, false);
         }

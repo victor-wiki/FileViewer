@@ -52,6 +52,8 @@ public partial class DataViewer : ContentPage
     {
         this.setting = SettingManager.GetSetting();
 
+        this.pageSize = this.setting.PageSize;
+
         this.timer = Dispatcher.CreateTimer();
         this.timer.Interval = TimeSpan.FromMilliseconds(500);
         this.timer.Tick += this.Timer_Tick;
@@ -283,6 +285,11 @@ public partial class DataViewer : ContentPage
         string js = @"<script type=""text/javascript""  src=""handsontable/handsontable.full.min.js""></script>";
 
         string columnHeaders = this.columnHeaders == null ? "false" : "[" + string.Join(",", this.columnHeaders.Select(item => $"'{item}'")) + "]";
+
+        if(this.fileOpenMode == FileOpenMode.ByExcelParser)
+        {
+            columnHeaders = "true";
+        }
 
         string html =
 @"<html>

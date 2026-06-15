@@ -14,8 +14,13 @@ public partial class Setting : ContentPage
 
         this.setting = SettingManager.GetSetting();
 
+        var pageSizeOptions = new List<string>() { "1000", "500", "200", "100" };
+
+        pageSizeOptions.ForEach(size => this.pickerPageSize.Items.Add(size));       
+
         this.switchEnableLog.IsToggled = this.setting.EnableLog;
         this.switchAutoColumnSize.IsToggled = this.setting.AutoColumnSize;
+        this.pickerPageSize.SelectedItem = this.setting.PageSize.ToString();
     }
 
     private void switchEnableLog_Toggled(object sender, ToggledEventArgs e)
@@ -29,6 +34,13 @@ public partial class Setting : ContentPage
     private void switchAutoColumnSize_Toggled(object sender, ToggledEventArgs e)
     {
         this.setting.AutoColumnSize = e.Value;
+
+        this.Save();
+    }
+
+    private void pickerPageSize_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        this.setting.PageSize = Convert.ToInt32(this.pickerPageSize.SelectedItem);
 
         this.Save();
     }

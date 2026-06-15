@@ -4,5 +4,6 @@
     {
         public bool EnableLog { get; set; }    
         public bool AutoColumnSize { get; set; }
+        public int PageSize { get; set; } = 1000;
     }   
 }

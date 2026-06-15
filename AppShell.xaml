@@ -12,13 +12,13 @@
             <Tab.Icon>
                 <FontImageSource FontFamily="FASolid" Glyph="{StaticResource home}"  />
             </Tab.Icon>
-            <ShellContent Title="Home" ContentTemplate="{DataTemplate local:MainPage}"  Route="MainPage" />           
-        </Tab> 
+            <ShellContent Title="Home" ContentTemplate="{DataTemplate local:MainPage}"  Route="MainPage" />
+        </Tab>
         <Tab Title="Setting">
             <Tab.Icon>
                 <FontImageSource FontFamily="FASolid" Glyph="{StaticResource setting}"  />
             </Tab.Icon>
             <ShellContent  Title="Setting" ContentTemplate="{DataTemplate local:Setting }" Route="Setting" />
         </Tab>
-    </TabBar>  
+    </TabBar>
 </Shell>
