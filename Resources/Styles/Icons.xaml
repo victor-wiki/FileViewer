@@ -16,4 +16,6 @@
     <x:String x:Key="home">&#xf015;</x:String>
     <x:String x:Key="search">&#xf002;</x:String>
     <x:String x:Key="columns">&#xf0db;</x:String>
+    <x:String x:Key="zoomIn">&#xf00e;</x:String>
+    <x:String x:Key="zoomOut">&#xf010;</x:String>
 </ResourceDictionary>

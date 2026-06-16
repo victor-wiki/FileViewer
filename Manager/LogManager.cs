@@ -4,7 +4,7 @@ namespace FileViewer.Manager
 {
     public class LogManager: FileManager
     {
-        private readonly static string logFileNameFormat = "log_{0}.txt";
+        private readonly static string logFileNameFormat = "{0}.txt";
 
         private static string logFolderName => "log";
         private static bool IsEnableLog => SettingManager.GetSetting().EnableLog;

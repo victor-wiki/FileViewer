@@ -18,11 +18,15 @@ namespace FileViewer.Helper
                 case ".png":
                 case ".gif":
                 case ".bmp":
+                case ".tiff":
+                case ".emf":
+                case ".wdp":               
                     openMode = FileOpenMode.ByImage;
                     break;
                 case ".mp3":
                 case ".wav":
                 case ".m4a":
+                case ".aac":
                 case ".wma":
                 case ".flac":
                 case ".mp4":
@@ -39,6 +43,10 @@ namespace FileViewer.Helper
                 case ".doc":
                 case ".docx":
                     openMode = FileOpenMode.ByWordParser;
+                    break;
+                case ".ppt":
+                case ".pptx":
+                    openMode = FileOpenMode.ByPowerPointParser;
                     break;
                 case ".xls":
                 case ".xlsx":

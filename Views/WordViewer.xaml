@@ -4,6 +4,6 @@
              x:Class="FileViewer.Views.WordViewer"
              Title="">
    
-        <WebView x:Name="viewer" Grid.Row="1" ></WebView>
+        <WebView x:Name="viewer" ></WebView>
     
 </ContentPage>

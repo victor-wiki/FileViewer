@@ -8,11 +8,12 @@
         ByPdfPath = 3,
         ByTextContent = 4,
         ByWordParser = 5,
-        ByExcelParser = 6,
-        ByCsvParser = 7,
-        BySqlite = 8,
-        ByAccess = 9,
-        ByZip = 10,
-        ByRar = 11
+        ByPowerPointParser = 6,
+        ByExcelParser = 7,
+        ByCsvParser = 8,
+        BySqlite = 9,
+        ByAccess = 10,
+        ByZip = 11,
+        ByRar = 12
     }
 }

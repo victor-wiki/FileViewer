@@ -49,7 +49,7 @@
                     <Switch x:Name="switchAutoColumnSize" Grid.Column="1" Toggled="switchAutoColumnSize_Toggled"></Switch>
 
                     <Label VerticalOptions="Center" Grid.Row="1">Page Size</Label>
-                    <Picker x:Name="pickerPageSize"  Grid.Column="1" Grid.Row="1" WidthRequest="100" Style="{StaticResource Picker}" SelectedIndexChanged="pickerPageSize_SelectedIndexChanged"></Picker>
+                    <Picker x:Name="pickerPageSize"  Grid.Column="1" Grid.Row="1" WidthRequest="100" SelectedIndexChanged="pickerPageSize_SelectedIndexChanged"></Picker>
 
                 </Grid>
 

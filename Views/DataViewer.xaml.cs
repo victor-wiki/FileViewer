@@ -3,7 +3,6 @@ using FileViewer.Helper;
 using FileViewer.Manager;
 using FileViewer.Model;
 using System.Text;
-using System.Threading.Tasks;
 using SqliteDataReader = FileViewer.DAL.SqliteDataReader;
 
 namespace FileViewer.Views;
@@ -22,6 +21,7 @@ public partial class DataViewer : ContentPage
     private string[] columnHeaders;
     private IDispatcherTimer timer;
     private SettingInfo setting;
+    private bool isPageLoaded = false;
 
     public DataViewer(string filePath, FileOpenMode openMode)
     {
@@ -30,9 +30,7 @@ public partial class DataViewer : ContentPage
         this.filePath = filePath;
         this.fileOpenMode = openMode;
 
-        this.lblTitle.Text = Path.GetFileName(filePath);
-
-        this.Init();
+        this.lblTitle.Text = Path.GetFileName(filePath);        
     }
 
     public DataViewer(string filePath, FileOpenMode openMode, DatabaseObject databaseObject)
@@ -43,9 +41,29 @@ public partial class DataViewer : ContentPage
         this.fileOpenMode = openMode;
         this.databaseObject = databaseObject;
 
-        this.lblTitle.Text = databaseObject.Name;
+        this.lblTitle.Text = databaseObject.Name;       
+    }
 
-        this.Init();
+    protected override void OnNavigatedTo(NavigatedToEventArgs args)
+    {
+        base.OnNavigatedTo(args);
+
+        if (!this.isPageLoaded)
+        {
+            this.viewer.Navigated += this.Viewer_Navigated;
+
+            this.viewer.Source = new HtmlWebViewSource() { Html = "" };
+        }
+    }
+
+    private async void Viewer_Navigated(object? sender, WebNavigatedEventArgs e)
+    {
+        if (!this.isPageLoaded)
+        {
+            this.isPageLoaded = true;
+
+            this.Init();
+        }
     }
 
     private async void Init()

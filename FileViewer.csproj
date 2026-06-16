@@ -69,12 +69,26 @@
 		<PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.9" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.71" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.9" />
+		<PackageReference Include="NaturalSort.Extension" Version="4.4.1" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
 		<PackageReference Include="NPOI" Version="2.8.0" />
 		<PackageReference Include="OpenXmlPowerTools.Core" Version="1.0.0" />
 		<PackageReference Include="SharpCompress" Version="0.49.1" />
 		<PackageReference Include="System.Data.OleDb" Version="10.0.9" />
+		<PackageReference Include="victor-wiki.PowerPointConverter" Version="1.0.3" />
 		<PackageReference Include="Vitvov.Maui.PDFView" Version="1.8.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="Views\PowerPointViewer.xaml.cs">
+	    <DependentUpon>PowerPointViewer.xaml</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <MauiXaml Update="Views\PowerPointViewer.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	</ItemGroup>
 
 </Project>

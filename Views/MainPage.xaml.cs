@@ -5,7 +5,7 @@ namespace FileViewer.Views
 {
     public partial class MainPage : ContentPage
     {
-       
+
         public MainPage()
         {
             InitializeComponent();
@@ -28,11 +28,11 @@ namespace FileViewer.Views
 
                 FileOpenMode openMode = FileHelper.GetFileOpenModeByExtension(extension);
 
-                if(openMode == FileOpenMode.Unknown)
+                if (openMode == FileOpenMode.Unknown)
                 {
                     openMode = FileHelper.DetectFileOpenMode(filePath);
 
-                    if(openMode == FileOpenMode.Unknown)
+                    if (openMode == FileOpenMode.Unknown)
                     {
                         await DisplayAlert("Information", "Not support.", "OK");
                         return;
@@ -66,13 +66,18 @@ namespace FileViewer.Views
 
                     await Navigation.PushAsync(page);
                 }
+                else if (openMode == FileOpenMode.ByPowerPointParser)
+                {
+                    PowerPointViewer page = (PowerPointViewer)Activator.CreateInstance(typeof(PowerPointViewer), filePath);
+                    await Navigation.PushAsync(page);
+                }
                 else if (openMode == FileOpenMode.BySqlite || openMode == FileOpenMode.ByAccess)
                 {
                     DbObjectList page = (DbObjectList)Activator.CreateInstance(typeof(DbObjectList), filePath, openMode);
 
                     await Navigation.PushAsync(page);
                 }
-                else if(openMode == FileOpenMode.ByTextContent)
+                else if (openMode == FileOpenMode.ByTextContent)
                 {
                     TextViewer page = (TextViewer)Activator.CreateInstance(typeof(TextViewer), filePath);
 
@@ -94,7 +99,7 @@ namespace FileViewer.Views
                 this.indicator.IsRunning = false;
                 this.openFileControl.IsVisible = true;
             }
-        }      
-       
+        }
+
     }
 }

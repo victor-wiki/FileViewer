@@ -1,6 +1,7 @@
 using FileViewer.Helper;
 using FileViewer.Model;
 using ICSharpCode.SharpZipLib.Core;
+using NaturalSort.Extension;
 using SharpCompress.Archives;
 using System.Text;
 
@@ -10,6 +11,7 @@ public partial class Explorer : ContentPage
 {
     private string filePath;
     private List<ZipEntryInfo> entryInfos = new List<ZipEntryInfo>();
+    private string entryRootDirectory = null;
     private string currentEntryDirectory = null;
     public Explorer(string filePath)
     {
@@ -31,6 +33,16 @@ public partial class Explorer : ContentPage
                 string key = entry.Key;
                 string name = Path.GetFileName(key.TrimEnd('/'));
                 string path = entry.Key.TrimEnd('/');
+
+                if (this.entryRootDirectory == null)
+                {
+                    if (path.Contains("/"))
+                    {
+                        int index = path.IndexOf("/");
+
+                        this.entryRootDirectory = path.Substring(0, index);
+                    }
+                }
 
                 ZipEntryInfo entryInfo = new ZipEntryInfo()
                 {
@@ -64,7 +76,21 @@ public partial class Explorer : ContentPage
 
             var rootFiles = this.entryInfos.Where(item => item.IsFile && item.Path.IndexOf("/") == -1).OrderBy(item => item.Name);
 
-            this.lvEntries.ItemsSource = rootFolders.Concat(rootFiles);
+            var results = rootFolders.Concat(rootFiles);
+
+            if(results.Any())
+            {
+                this.lvEntries.ItemsSource = results;
+            }
+            else
+            {
+                results =this.entryInfos.Where(item => Path.GetDirectoryName(item.Path) == (this.entryRootDirectory ?? "")).ToList();
+
+                var folders = results.Where(item => item.IsFile == false).OrderBy(item => item.Name, StringComparison.OrdinalIgnoreCase.WithNaturalSort());
+                var files = results.Where(item => item.IsFile).OrderBy(item => item.Name, StringComparison.OrdinalIgnoreCase.WithNaturalSort());
+
+                this.lvEntries.ItemsSource = folders.Concat(files);
+            }            
         }
     }
 
@@ -100,8 +126,8 @@ public partial class Explorer : ContentPage
 
             var infos = this.entryInfos.Where(item => this.GetDirectoryPath(item.Path) == entryInfo.Path && item != entryInfo);
 
-            this.lvEntries.ItemsSource = infos.Where(item=>item.IsFile == false).OrderBy(item=>item.Name)
-                .Concat(infos.Where(item=>item.IsFile).OrderBy(item=>item.Name));
+            this.lvEntries.ItemsSource = infos.Where(item=>item.IsFile == false).OrderBy(item=>item.Name, StringComparison.OrdinalIgnoreCase.WithNaturalSort())
+                .Concat(infos.Where(item=>item.IsFile).OrderBy(item=>item.Name, StringComparison.OrdinalIgnoreCase.WithNaturalSort()));
 
             this.SetToolbarItemStatus(this.tbiBack, true);
         }
@@ -139,6 +165,12 @@ public partial class Explorer : ContentPage
                     else if (openMode == FileOpenMode.ByWordParser)
                     {
                         WordViewer page = (WordViewer)Activator.CreateInstance(typeof(WordViewer), ms, entryInfo.Name);
+
+                        await Navigation.PushAsync(page);
+                    }
+                    else if(openMode == FileOpenMode.ByPowerPointParser)
+                    {
+                        PowerPointViewer page = (PowerPointViewer)Activator.CreateInstance(typeof(PowerPointViewer), ms, entryInfo.Name);
 
                         await Navigation.PushAsync(page);
                     }
