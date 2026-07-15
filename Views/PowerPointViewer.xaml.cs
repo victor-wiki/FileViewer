@@ -13,8 +13,8 @@ public partial class PowerPointViewer : ContentPage
     private int slideCount = 0;
     private bool isLoading = false;
     private bool isPageLoaded = false;
-    private decimal? windowWidth = null;
-    private decimal? slideWidth = null;
+    private double? windowWidth = null;
+    private double? slideWidth = null;
     private int? currentZoomPercent = null;
 
     public PowerPointViewer(string filePath)
@@ -39,7 +39,7 @@ public partial class PowerPointViewer : ContentPage
     {
         base.OnNavigatedTo(args);
 
-        this.windowWidth = (decimal)Application.Current.MainPage.Window.Width;
+        this.windowWidth = (double)Application.Current.MainPage.Window.Width;
 
         if (!this.isPageLoaded)
         {
@@ -61,7 +61,7 @@ public partial class PowerPointViewer : ContentPage
     {
         if (this.slideWidth > 0 && this.windowWidth > 0)
         {
-            int zoomPercent = (int)(this.windowWidth * (decimal)0.95 / this.slideWidth * 100);
+            int zoomPercent = (int)(this.windowWidth * 0.95 / this.slideWidth * 100);
 
             return zoomPercent;           
         }
