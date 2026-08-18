@@ -10,10 +10,11 @@
         ByWordParser = 5,
         ByPowerPointParser = 6,
         ByExcelParser = 7,
-        ByCsvParser = 8,
-        BySqlite = 9,
-        ByAccess = 10,
-        ByZip = 11,
-        ByRar = 12
+        ByVisioParser = 8,
+        ByCsvParser = 9,
+        BySqlite = 10,
+        ByAccess = 11,
+        ByZip = 12,
+        ByRar = 13       
     }
 }

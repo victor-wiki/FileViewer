@@ -71,6 +71,11 @@ namespace FileViewer.Views
                     PowerPointViewer page = (PowerPointViewer)Activator.CreateInstance(typeof(PowerPointViewer), filePath);
                     await Navigation.PushAsync(page);
                 }
+                else if (openMode == FileOpenMode.ByVisioParser)
+                {
+                    VisioViewer page = (VisioViewer)Activator.CreateInstance(typeof(VisioViewer), filePath);
+                    await Navigation.PushAsync(page);
+                }
                 else if (openMode == FileOpenMode.BySqlite || openMode == FileOpenMode.ByAccess)
                 {
                     DbObjectList page = (DbObjectList)Activator.CreateInstance(typeof(DbObjectList), filePath, openMode);

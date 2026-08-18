@@ -43,14 +43,16 @@ namespace FileViewer.Helper
                 case ".doc":
                 case ".docx":
                     openMode = FileOpenMode.ByWordParser;
-                    break;
-                case ".ppt":
+                    break;          
                 case ".pptx":
                     openMode = FileOpenMode.ByPowerPointParser;
                     break;
                 case ".xls":
                 case ".xlsx":
                     openMode = FileOpenMode.ByExcelParser;
+                    break;
+                case ".vsdx":
+                    openMode = FileOpenMode.ByVisioParser;
                     break;
                 case ".csv":
                     openMode = FileOpenMode.ByCsvParser;

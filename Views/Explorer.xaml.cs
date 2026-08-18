@@ -174,6 +174,12 @@ public partial class Explorer : ContentPage
 
                         await Navigation.PushAsync(page);
                     }
+                    else if (openMode == FileOpenMode.ByVisioParser)
+                    {
+                        VisioViewer page = (VisioViewer)Activator.CreateInstance(typeof(VisioViewer), ms, entryInfo.Name);
+
+                        await Navigation.PushAsync(page);
+                    }
                     else if (openMode == FileOpenMode.ByImage)
                     {
                         ImageViewer page = (ImageViewer)Activator.CreateInstance(typeof(ImageViewer), ms, entryInfo.Name);
