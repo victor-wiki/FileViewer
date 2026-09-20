@@ -22,6 +22,7 @@ public partial class DataViewer : ContentPage
     private IDispatcherTimer timer;
     private SettingInfo setting;
     private bool isPageLoaded = false;
+    private bool autoColumnSize = true;
 
     public DataViewer(string filePath, FileOpenMode openMode)
     {
@@ -69,6 +70,8 @@ public partial class DataViewer : ContentPage
     private async void Init()
     {
         this.setting = SettingManager.GetSetting();
+
+        this.autoColumnSize = this.setting.AutoColumnSize;
 
         this.pageSize = this.setting.PageSize;
 
@@ -267,8 +270,7 @@ public partial class DataViewer : ContentPage
         string dataArray = null;
         string strMergeCell = string.Empty;
         int columnWidth = 100;
-        int rowHeight = 30;
-        bool autoColumnSize = this.setting.AutoColumnSize;
+        int rowHeight = 30;        
         bool isMobile = DeviceInfo.Current.Platform == DevicePlatform.Android || DeviceInfo.Current.Platform == DevicePlatform.iOS;
         string strColumnWidth = autoColumnSize ? "undefined" : columnWidth.ToString();
 
@@ -505,6 +507,8 @@ var hot = new Handsontable(container, {
 }";
 
         this.ExecuteJavaScript(this.viewer, script);
+
+        this.autoColumnSize = !this.autoColumnSize;
     }
 
     private async void ExecuteJavaScript(WebView webView, string script)
